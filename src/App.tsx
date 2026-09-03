@@ -5,7 +5,6 @@ import {
   estudeAudience,
   estudeBenefits,
   estudeObjections,
-  evidenceLearning,
   extras,
   faqItems,
   navItems,
@@ -946,19 +945,6 @@ function EstudePlan() {
   );
 }
 
-function Evidence() {
-  return (
-    <section className="section evidence-section">
-      <div className="evidence-glow" aria-hidden="true" />
-      <img className="evidence-shape" src="/assets/evidence-shape.webp" alt="" aria-hidden="true" width="1185" height="1248" loading="lazy" decoding="async" />
-      <div className="page-width page-width--narrow">
-        <Reveal className="evidence-heading"><h2>Aprenda a usar evidências sem se perder em termos difíceis.</h2><p>No módulo de Nutrição Baseada em Evidências, você aprende a:</p></Reveal>
-        <div className="evidence-list">{evidenceLearning.map((item) => <Reveal key={item}><p>{item}</p></Reveal>)}</div>
-      </div>
-    </section>
-  );
-}
-
 function Mentor() {
   return (
     <section className="section mentor-section">
@@ -998,24 +984,43 @@ function PlanPaymentSummary({ plan, compact = false }: { plan: PricingPlan; comp
   );
 }
 
+function accessLabel(months: number) {
+  return months === 1 ? 'Acesso por 1 mês' : `Acesso por ${months} meses`;
+}
+
 function Pricing() {
   const annualPlan = pricingPlans.annual;
   return (
     <section id="planos" className="section pricing-section">
       <div className="page-width page-width--narrow">
         <Reveal><SectionHeading>Planos pensados para se adaptar à sua<br/>rotina de estudos</SectionHeading></Reveal>
-        <Reveal className="pricing-card pricing-card--featured">
-          <img className="featured-badge" src="/assets/featured-badge-labeled.webp" alt="Plano destaque" width="790" height="1000" loading="lazy" decoding="async"/>
-          <h2>{annualPlan.title}<br/><span>{annualPlan.subtitle}</span></h2>
-          <h3>{annualPlan.description}</h3>
-          <PlanPaymentSummary plan={annualPlan} />
-          <ul>{annualPlan.benefits?.map((item) => <li key={item}><PricingCheck />{item}</li>)}</ul>
-          <div className="pricing-actions"><Button href={annualPlan.checkoutUrl} external>QUERO A EXPERIÊNCIA COMPLETA</Button><Button href="/estude" variant="outline" className="pricing-card__secondary">CONHECER O ESTUDE</Button></div>
-          <div className="scarcity">🔥 últimas vagas restantes!</div>
-        </Reveal>
-        <Reveal className="platform-pricing">
-          <header><div><h2>Planos Nutriwork Plus</h2><p>Escolha o período e veja primeiro a condição real do cartão.</p></div><span>Condições reais</span></header>
-          <div className="mini-plans">{platformPlanIds.map((planId) => { const plan = pricingPlans[planId]; return <article key={plan.id}><h3>{plan.title}</h3><PlanPaymentSummary plan={plan} compact/><Button href={plan.checkoutUrl} external>Quero assinar</Button></article>; })}</div>
+        <div className="plans-grid">
+          {platformPlanIds.map((planId) => {
+            const plan = pricingPlans[planId];
+            return (
+              <Reveal key={plan.id} className="plan-card plan-card--muted">
+                <h3>{plan.title}</h3>
+                <p className="plan-card__tagline">{accessLabel(plan.accessMonths)}</p>
+                <PlanPaymentSummary plan={plan} compact />
+                <Button href={plan.checkoutUrl} variant="outline" className="plan-card__cta" external>Quero assinar</Button>
+              </Reveal>
+            );
+          })}
+          <Reveal className="plan-card plan-card--featured">
+            <span className="plan-card__badge">Escolha principal</span>
+            <h3>{annualPlan.title}<br/><span className="plan-card__subtitle">{annualPlan.subtitle}</span></h3>
+            <p className="plan-card__tagline">{annualPlan.description}</p>
+            <PlanPaymentSummary plan={annualPlan} compact />
+            <ul>{annualPlan.benefits?.map((item) => <li key={item}><PricingCheck />{item}</li>)}</ul>
+            <div className="plan-card__actions">
+              <Button href={annualPlan.checkoutUrl} className="plan-card__cta" external>QUERO A EXPERIÊNCIA COMPLETA</Button>
+              <Button href="/estude" variant="outline" className="plan-card__secondary">CONHECER O ESTUDE</Button>
+            </div>
+            <p className="plan-card__scarcity">🔥 últimas vagas restantes!</p>
+          </Reveal>
+        </div>
+        <Reveal className="plans-includes">
+          <p className="plans-includes__label">Todos os planos incluem</p>
           <ul>{platformBenefits.map((item) => <li key={item}><PricingCheck />{item}</li>)}</ul>
         </Reveal>
       </div>
@@ -1091,7 +1096,7 @@ function Footer({ showStatement = true }: { showStatement?: boolean }) {
 }
 
 function HomePage() {
-  return <main><Hero/><ReferencesSection/><Platform/><JoinCta/><Courses/><Extras/><Evidence/><Mentor/><Pricing/><FAQ/></main>;
+  return <main><Hero/><ReferencesSection/><Platform/><JoinCta/><Courses/><Extras/><Mentor/><Pricing/><FAQ/></main>;
 }
 
 function EstudePage() {
